@@ -1,4 +1,12 @@
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  Outlet,
+  Link,
+  createRootRouteWithContext,
+  useRouter,
+  HeadContent,
+  Scripts,
+} from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
