@@ -4,7 +4,7 @@ import { AuthorStrip } from "@/components/author-strip";
 import { RouteError, RouteNotFound } from "@/components/route-fallbacks";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getPostBySlug, type FullPost } from "@/lib/posts.functions";
+import { getPostBySlug } from "@/lib/posts.functions";
 import { fmtDate } from "@/lib/format";
 
 export const Route = createFileRoute("/posts/$slug")({
@@ -40,7 +40,7 @@ function PostNotFound() {
 }
 
 function PostPage() {
-  const post = Route.useLoaderData<FullPost>();
+  const post = Route.useLoaderData();
   const paragraphs: string[] = post.content.split(/\n{2,}/).filter(Boolean);
 
   return (
