@@ -15,6 +15,10 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminNewRouteImport } from './routes/_authenticated/admin.new'
+import { Route as AuthenticatedAdminProfileRouteImport } from './routes/_authenticated/admin.profile'
+import { Route as AuthenticatedAdminSlugEditRouteImport } from './routes/_authenticated/admin.$slug.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,20 +49,49 @@ const PostsSlugRoute = PostsSlugRouteImport.update({
   path: '/posts/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminNewRoute = AuthenticatedAdminNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminProfileRoute =
+  AuthenticatedAdminProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSlugEditRoute =
+  AuthenticatedAdminSlugEditRouteImport.update({
+    id: '/$slug/edit',
+    path: '/$slug/edit',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/posts/$slug': typeof PostsSlugRoute
+  '/admin/new': typeof AuthenticatedAdminNewRoute
+  '/admin/profile': typeof AuthenticatedAdminProfileRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/$slug/edit': typeof AuthenticatedAdminSlugEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/posts/$slug': typeof PostsSlugRoute
+  '/admin/new': typeof AuthenticatedAdminNewRoute
+  '/admin/profile': typeof AuthenticatedAdminProfileRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/$slug/edit': typeof AuthenticatedAdminSlugEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -66,14 +99,35 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/posts/$slug': typeof PostsSlugRoute
+  '/_authenticated/admin/new': typeof AuthenticatedAdminNewRoute
+  '/_authenticated/admin/profile': typeof AuthenticatedAdminProfileRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/$slug/edit': typeof AuthenticatedAdminSlugEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/auth' | '/admin' | '/posts/$slug'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/admin'
+    | '/posts/$slug'
+    | '/admin/new'
+    | '/admin/profile'
+    | '/admin/'
+    | '/admin/$slug/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/auth' | '/admin' | '/posts/$slug'
+  to:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/posts/$slug'
+    | '/admin/new'
+    | '/admin/profile'
+    | '/admin'
+    | '/admin/$slug/edit'
   id:
     | '__root__'
     | '/'
@@ -82,6 +136,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/posts/$slug'
+    | '/_authenticated/admin/new'
+    | '/_authenticated/admin/profile'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/$slug/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -136,15 +194,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/new': {
+      id: '/_authenticated/admin/new'
+      path: '/new'
+      fullPath: '/admin/new'
+      preLoaderRoute: typeof AuthenticatedAdminNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/profile': {
+      id: '/_authenticated/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AuthenticatedAdminProfileRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/$slug/edit': {
+      id: '/_authenticated/admin/$slug/edit'
+      path: '/$slug/edit'
+      fullPath: '/admin/$slug/edit'
+      preLoaderRoute: typeof AuthenticatedAdminSlugEditRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminNewRoute: typeof AuthenticatedAdminNewRoute
+  AuthenticatedAdminProfileRoute: typeof AuthenticatedAdminProfileRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminSlugEditRoute: typeof AuthenticatedAdminSlugEditRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminNewRoute: AuthenticatedAdminNewRoute,
+  AuthenticatedAdminProfileRoute: AuthenticatedAdminProfileRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminSlugEditRoute: AuthenticatedAdminSlugEditRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
