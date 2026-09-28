@@ -118,6 +118,20 @@ function ProfilePage() {
         <h2 className="font-display mb-6 text-2xl uppercase tracking-tight">Change password</h2>
         <div className="space-y-6">
           <div>
+            <label className={labelCls} htmlFor="pw0">Current password</label>
+            <input
+              id="pw0"
+              type="password"
+              autoComplete="current-password"
+              className={inputCls}
+              value={pw0}
+              onChange={(e) => setPw0(e.target.value)}
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              For now, that's the temporary one you signed in with.
+            </p>
+          </div>
+          <div>
             <label className={labelCls} htmlFor="pw1">New password</label>
             <input
               id="pw1"
