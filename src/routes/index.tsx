@@ -54,8 +54,8 @@ function Home() {
             <span className="-mx-1 block text-primary">Denied</span>
           </h1>
           <p className="animate-rise mt-5 max-w-[42ch] text-sm text-pretty text-muted-foreground [animation-delay:120ms] sm:text-base">
-            Long-form essays on power, protest, and living openly. Written by Tara Martin. No
-            polish, no apology.
+            Essays and articles by Tara. Be it whimsy, politics, or living authentically, it's all
+            unapologetically whatever the fuck I'm feeling.
           </p>
         </div>
       </section>
