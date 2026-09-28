@@ -102,6 +102,44 @@ function ProfilePage() {
           {saving ? "Saving…" : "Save profile"}
         </button>
       </div>
+
+      <div className="mt-12 border-t border-line pt-8">
+        <h2 className="font-display mb-6 text-2xl uppercase tracking-tight">Change password</h2>
+        <div className="space-y-6">
+          <div>
+            <label className={labelCls} htmlFor="pw1">New password</label>
+            <input
+              id="pw1"
+              type="password"
+              autoComplete="new-password"
+              className={inputCls}
+              value={pw1}
+              onChange={(e) => setPw1(e.target.value)}
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">At least 8 characters.</p>
+          </div>
+          <div>
+            <label className={labelCls} htmlFor="pw2">Confirm new password</label>
+            <input
+              id="pw2"
+              type="password"
+              autoComplete="new-password"
+              className={inputCls}
+              value={pw2}
+              onChange={(e) => setPw2(e.target.value)}
+            />
+          </div>
+          <button
+            type="button"
+            disabled={changing}
+            onClick={changePassword}
+            className="rounded-md bg-primary px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+          >
+            {changing ? "Updating…" : "Update password"}
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }
