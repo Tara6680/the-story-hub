@@ -12,6 +12,51 @@ export const Route = createFileRoute("/_authenticated/admin/profile")({
   component: ProfilePage,
 });
 
+function PasswordField({
+  id,
+  label,
+  autoComplete,
+  value,
+  onChange,
+  inputCls,
+  labelCls,
+  hint,
+}: {
+  id: string;
+  label: string;
+  autoComplete: string;
+  value: string;
+  onChange: (v: string) => void;
+  inputCls: string;
+  labelCls: string;
+  hint?: string;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <label className={labelCls} htmlFor={id}>{label}</label>
+      <div className="relative">
+        <input
+          id={id}
+          type={show ? "text" : "password"}
+          autoComplete={autoComplete}
+          className={`${inputCls} pr-16`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {show ? "Hide" : "Show"}
+        </button>
+      </div>
+      {hint ? <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
 function ProfilePage() {
   const profile = Route.useLoaderData();
   const [displayName, setDisplayName] = useState(profile.display_name);
