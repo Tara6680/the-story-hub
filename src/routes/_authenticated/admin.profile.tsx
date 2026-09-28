@@ -12,6 +12,51 @@ export const Route = createFileRoute("/_authenticated/admin/profile")({
   component: ProfilePage,
 });
 
+function PasswordField({
+  id,
+  label,
+  autoComplete,
+  value,
+  onChange,
+  inputCls,
+  labelCls,
+  hint,
+}: {
+  id: string;
+  label: string;
+  autoComplete: string;
+  value: string;
+  onChange: (v: string) => void;
+  inputCls: string;
+  labelCls: string;
+  hint?: string;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <label className={labelCls} htmlFor={id}>{label}</label>
+      <div className="relative">
+        <input
+          id={id}
+          type={show ? "text" : "password"}
+          autoComplete={autoComplete}
+          className={`${inputCls} pr-16`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {show ? "Hide" : "Show"}
+        </button>
+      </div>
+      {hint ? <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
 function ProfilePage() {
   const profile = Route.useLoaderData();
   const [displayName, setDisplayName] = useState(profile.display_name);
@@ -117,43 +162,35 @@ function ProfilePage() {
       <div className="mt-12 border-t border-line pt-8">
         <h2 className="font-display mb-6 text-2xl uppercase tracking-tight">Change password</h2>
         <div className="space-y-6">
-          <div>
-            <label className={labelCls} htmlFor="pw0">Current password</label>
-            <input
-              id="pw0"
-              type="password"
-              autoComplete="current-password"
-              className={inputCls}
-              value={pw0}
-              onChange={(e) => setPw0(e.target.value)}
-            />
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              For now, that's the temporary one you signed in with.
-            </p>
-          </div>
-          <div>
-            <label className={labelCls} htmlFor="pw1">New password</label>
-            <input
-              id="pw1"
-              type="password"
-              autoComplete="new-password"
-              className={inputCls}
-              value={pw1}
-              onChange={(e) => setPw1(e.target.value)}
-            />
-            <p className="mt-1.5 text-xs text-muted-foreground">At least 8 characters.</p>
-          </div>
-          <div>
-            <label className={labelCls} htmlFor="pw2">Confirm new password</label>
-            <input
-              id="pw2"
-              type="password"
-              autoComplete="new-password"
-              className={inputCls}
-              value={pw2}
-              onChange={(e) => setPw2(e.target.value)}
-            />
-          </div>
+          <PasswordField
+            id="pw0"
+            label="Current password"
+            autoComplete="current-password"
+            value={pw0}
+            onChange={setPw0}
+            inputCls={inputCls}
+            labelCls={labelCls}
+            hint="For now, that's the temporary one you signed in with."
+          />
+          <PasswordField
+            id="pw1"
+            label="New password"
+            autoComplete="new-password"
+            value={pw1}
+            onChange={setPw1}
+            inputCls={inputCls}
+            labelCls={labelCls}
+            hint="At least 8 characters."
+          />
+          <PasswordField
+            id="pw2"
+            label="Confirm new password"
+            autoComplete="new-password"
+            value={pw2}
+            onChange={setPw2}
+            inputCls={inputCls}
+            labelCls={labelCls}
+          />
           <button
             type="button"
             disabled={changing}
