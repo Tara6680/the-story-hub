@@ -87,7 +87,10 @@ function ProfilePage() {
       if (!email) throw new Error("Couldn't verify your account. Try signing in again.");
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: pw0 });
       if (signInError) throw new Error("Current password is incorrect.");
-      const { error } = await supabase.auth.updateUser({ password: pw1 });
+      const { error } = await supabase.auth.updateUser({
+        password: pw1,
+        current_password: pw0,
+      });
       if (error) throw error;
       setPw0("");
       setPw1("");
