@@ -17,11 +17,16 @@ function ProfilePage() {
   const [displayName, setDisplayName] = useState(profile.display_name);
   const [bio, setBio] = useState(profile.bio);
   const [saving, setSaving] = useState(false);
+  const [pw0, setPw0] = useState("");
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [changing, setChanging] = useState(false);
 
   async function changePassword() {
+    if (!pw0) {
+      toast.error("Enter your current password first.");
+      return;
+    }
     if (pw1.length < 8) {
       toast.error("Use at least 8 characters.");
       return;
@@ -32,8 +37,14 @@ function ProfilePage() {
     }
     setChanging(true);
     try {
+      const { data: userData } = await supabase.auth.getUser();
+      const email = userData.user?.email;
+      if (!email) throw new Error("Couldn't verify your account. Try signing in again.");
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: pw0 });
+      if (signInError) throw new Error("Current password is incorrect.");
       const { error } = await supabase.auth.updateUser({ password: pw1 });
       if (error) throw error;
+      setPw0("");
       setPw1("");
       setPw2("");
       toast.success("Password updated.");
