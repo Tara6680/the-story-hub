@@ -9,6 +9,7 @@ First of a planned string of websites/apps. Blog first, expanding later.
 - [x] Sign-in page (/auth), admin dashboard + post editor + profile editor
 
 ## Open
-- [ ] Create Tara's admin account — blocked: waiting on the email to sign her up with
+- [x] Create Tara's admin account
+- [x] Add a secure password-change option to the admin profile
 - [ ] Connect decorumdenied.com — user does this in Project Settings → Domains (paid plan), then publish
 - [ ] Later: real newsletter sending, comments, analytics, additional sites in the portfolio
