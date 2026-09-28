@@ -17,11 +17,16 @@ function ProfilePage() {
   const [displayName, setDisplayName] = useState(profile.display_name);
   const [bio, setBio] = useState(profile.bio);
   const [saving, setSaving] = useState(false);
+  const [pw0, setPw0] = useState("");
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [changing, setChanging] = useState(false);
 
   async function changePassword() {
+    if (!pw0) {
+      toast.error("Enter your current password first.");
+      return;
+    }
     if (pw1.length < 8) {
       toast.error("Use at least 8 characters.");
       return;
@@ -32,8 +37,14 @@ function ProfilePage() {
     }
     setChanging(true);
     try {
+      const { data: userData } = await supabase.auth.getUser();
+      const email = userData.user?.email;
+      if (!email) throw new Error("Couldn't verify your account. Try signing in again.");
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: pw0 });
+      if (signInError) throw new Error("Current password is incorrect.");
       const { error } = await supabase.auth.updateUser({ password: pw1 });
       if (error) throw error;
+      setPw0("");
       setPw1("");
       setPw2("");
       toast.success("Password updated.");
@@ -106,6 +117,20 @@ function ProfilePage() {
       <div className="mt-12 border-t border-line pt-8">
         <h2 className="font-display mb-6 text-2xl uppercase tracking-tight">Change password</h2>
         <div className="space-y-6">
+          <div>
+            <label className={labelCls} htmlFor="pw0">Current password</label>
+            <input
+              id="pw0"
+              type="password"
+              autoComplete="current-password"
+              className={inputCls}
+              value={pw0}
+              onChange={(e) => setPw0(e.target.value)}
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              For now, that's the temporary one you signed in with.
+            </p>
+          </div>
           <div>
             <label className={labelCls} htmlFor="pw1">New password</label>
             <input
