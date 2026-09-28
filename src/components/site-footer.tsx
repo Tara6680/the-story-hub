@@ -33,7 +33,7 @@ export function SiteFooter() {
             in your inbox.
           </h3>
           <p className="mt-2 text-sm text-pretty text-muted-foreground">
-            One essay a month. No spam, no algorithms, no decorum.
+            No spam, no algorithms, no decorum.
           </p>
           {state === "done" ? (
             <p className="mt-4 font-mono text-xs uppercase tracking-wider text-accent-2">
