@@ -17,6 +17,33 @@ function ProfilePage() {
   const [displayName, setDisplayName] = useState(profile.display_name);
   const [bio, setBio] = useState(profile.bio);
   const [saving, setSaving] = useState(false);
+  const [pw1, setPw1] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [changing, setChanging] = useState(false);
+
+  async function changePassword() {
+    if (pw1.length < 8) {
+      toast.error("Use at least 8 characters.");
+      return;
+    }
+    if (pw1 !== pw2) {
+      toast.error("The two passwords don't match.");
+      return;
+    }
+    setChanging(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: pw1 });
+      if (error) throw error;
+      setPw1("");
+      setPw2("");
+      toast.success("Password updated.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update password. Try again.");
+    } finally {
+      setChanging(false);
+    }
+  }
+
 
   async function save() {
     if (!displayName.trim()) {
