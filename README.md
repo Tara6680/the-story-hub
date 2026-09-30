@@ -4,7 +4,7 @@ Well eventually we're going to be building a string of websites and apps,  we're
 
 This project was built with [Lovable](https://lovable.dev).
 
-## Build with Lovable
+## Build with Lovable  
 
 Continue developing this project in the [Lovable editor](https://lovable.dev/projects/a2823faf-c805-4877-b8f0-f485d767f94a).
 
