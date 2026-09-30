@@ -44,9 +44,21 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+// Populate process.env from Workers env bindings so app code using process.env works
+function populateProcessEnv(env: unknown) {
+  if (env && typeof env === "object") {
+    for (const [key, value] of Object.entries(env as Record<string, unknown>)) {
+      if (typeof value === "string") {
+        process.env[key] = value;
+      }
+    }
+  }
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      populateProcessEnv(env);
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
