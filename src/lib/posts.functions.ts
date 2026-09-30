@@ -29,7 +29,7 @@ export const getPublishedPosts = createServerFn({ method: "GET" }).handler(async
     )
     .eq("status", "published")
     .order("published_at", { ascending: false, nullsFirst: false });
-  if (error) throw new Error("Unable to load posts right now.");
+  if (error) throw new Error(`Unable to load posts right now. Supabase error: ${JSON.stringify(error)}`);
   return (data ?? []) as PostListItem[];
 });
 
@@ -47,4 +47,6 @@ export const getPostBySlug = createServerFn({ method: "GET" })
       .eq("slug", data.slug)
       .eq("status", "published")
       .maybeSingle();
-   if (error) throw new Error(\Unable to load posts right now. Supabase error: ${JSON.stringify(error)}`);`
+    if (error) throw new Error(`Unable to load posts right now. Supabase error: ${JSON.stringify(error)}`);
+    return (post as FullPost | null) ?? null;
+  });
