@@ -47,6 +47,4 @@ export const getPostBySlug = createServerFn({ method: "GET" })
       .eq("slug", data.slug)
       .eq("status", "published")
       .maybeSingle();
-    if (error) throw new Error("Unable to load this post right now.");
-    return (post as FullPost | null) ?? null;
-  });
+   if (error) throw new Error(\Unable to load posts right now. Supabase error: ${JSON.stringify(error)}`);`
