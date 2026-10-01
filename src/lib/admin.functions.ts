@@ -35,6 +35,17 @@ export const isAdmin = createServerFn({ method: "GET" })
     return Boolean(data);
   });
 
+export const getSubscriberCount = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { count, error } = await context.supabase
+      .from("newsletter_subscribers")
+      .select("*", { count: "exact", head: true });
+    if (error) throw new Error("Couldn't load subscriber count.");
+    return count ?? 0;
+  });
+
 export const listAllPosts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -127,7 +138,6 @@ export const savePost = createServerFn({ method: "POST" })
     };
 
     if (data.id && existing) {
-      // Keep the existing slug unless it changed deliberately.
       const currentSlugMatches = baseSlug === slugify(existing.slug) || data.slug?.trim();
       const nextSlug = currentSlugMatches ? baseSlug : slugify(existing.slug);
       const { data: updated, error } = await context.supabase
@@ -140,7 +150,7 @@ export const savePost = createServerFn({ method: "POST" })
         if (error.code === "23505") {
           const retry = await context.supabase
             .from("posts")
-            .update({ ...row, slug: `${nextSlug}-${Math.random().toString(36).slice(2, 6)}` })
+            .update({ ...row, slug: nextSlug + "-" + Math.random().toString(36).slice(2, 6) })
             .eq("id", data.id)
             .select()
             .single();
@@ -161,7 +171,7 @@ export const savePost = createServerFn({ method: "POST" })
       if (error.code === "23505") {
         const retry = await context.supabase
           .from("posts")
-          .insert({ ...row, slug: `${baseSlug}-${Math.random().toString(36).slice(2, 6)}` })
+          .insert({ ...row, slug: baseSlug + "-" + Math.random().toString(36).slice(2, 6) })
           .select()
           .single();
         if (retry.error) throw new Error("Couldn't save — try a different title.");
