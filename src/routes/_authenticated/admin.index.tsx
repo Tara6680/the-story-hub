@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { deletePost, listAllPosts, setPostStatus, getSubscriberCount } from "@/lib/admin.functions";
+import { sendNewsletter } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Posts — The Pressroom" }] }),
@@ -20,6 +22,10 @@ function formatDate(value: string | null) {
 
 function AdminPostsPage() {
   const queryClient = useQueryClient();
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailContent, setEmailContent] = useState("");
+
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["admin", "posts"],
     queryFn: () => listAllPosts(),
@@ -51,6 +57,18 @@ function AdminPostsPage() {
     onError: (err) => toast.error(err instanceof Error ? err.message : "Couldn't delete."),
   });
 
+  const emailMutation = useMutation({
+    mutationFn: (input: { subject: string; content: string }) =>
+      sendNewsletter({ data: input }),
+    onSuccess: (result) => {
+      toast.success("Sent " + result.sent + " of " + result.total + " emails." + (result.failed > 0 ? " " + result.failed + " failed." : ""));
+      setShowEmailForm(false);
+      setEmailSubject("");
+      setEmailContent("");
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : "Couldn't send emails."),
+  });
+
   return (
     <div>
       <div className="mb-8 flex items-end justify-between gap-4">
@@ -67,12 +85,50 @@ function AdminPostsPage() {
       </div>
 
       <div className="mb-6 rounded-md border border-line/70 bg-muted/30 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="inline-block size-2.5 bg-accent-2" aria-hidden />
-          <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Newsletter subscribers: <span className="text-foreground font-bold">{subscriberCount}</span>
-          </span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-block size-2.5 bg-accent-2" aria-hidden />
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              Newsletter subscribers: <span className="text-foreground font-bold">{subscriberCount}</span>
+            </span>
+          </div>
+          {subscriberCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowEmailForm(!showEmailForm)}
+              className="rounded border border-line px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors hover:border-primary hover:text-primary"
+            >
+              {showEmailForm ? "Cancel" : "Email subscribers"}
+            </button>
+          )}
         </div>
+
+        {showEmailForm && (
+          <div className="mt-4 space-y-3">
+            <input
+              type="text"
+              placeholder="Email subject"
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              className="w-full rounded border border-line bg-background px-3 py-2 text-sm"
+            />
+            <textarea
+              placeholder="Write your email here (HTML is supported)"
+              value={emailContent}
+              onChange={(e) => setEmailContent(e.target.value)}
+              rows={6}
+              className="w-full rounded border border-line bg-background px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              disabled={!emailSubject || !emailContent || emailMutation.isPending}
+              onClick={() => emailMutation.mutate({ subject: emailSubject, content: emailContent })}
+              className="rounded bg-primary px-4 py-2 font-mono text-xs uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            >
+              {emailMutation.isPending ? "Sending..." : "Send to " + subscriberCount + " subscribers"}
+            </button>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
