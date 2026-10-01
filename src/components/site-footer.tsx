@@ -65,8 +65,9 @@ export function SiteFooter() {
           )}
         </div>
         <div className="mt-10 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">
-          <span>© 2026 Decorum Denied</span>
-          <span>Printed with ink</span>
+          <span>© 2026 Decorum Denied · <a href="/privacy" className="transition-colors hover:text-primary">Privacy</a></span>
+
+          <span>Live your life</span>
         </div>
       </div>
     </footer>
